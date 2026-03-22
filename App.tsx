@@ -1,39 +1,83 @@
-import React, { useState, useEffect, useRef } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Location from "expo-location";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  ScrollView,
-  LayoutAnimation,
-  Platform,
-  UIManager,
   Animated,
   Easing,
+  LayoutAnimation,
   LogBox,
-  Dimensions,
   Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  UIManager,
+  View,
 } from "react-native";
+import DeviceInfo from "react-native-device-info";
+import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import Svg, {
   Circle,
   Defs,
-  Pattern,
-  Rect,
-  Path,
-  Mask,
-  Filter,
   FeGaussianBlur,
   FeMerge,
   FeMergeNode,
+  Filter,
+  Mask,
+  Path,
+  Pattern,
+  Rect,
 } from "react-native-svg";
-import DeviceInfo from "react-native-device-info";
-import RNCalendarEvents from "react-native-calendar-events";
-import * as Location from "expo-location";
-import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
-import { Audio } from "expo-av";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { tokens } from "./src/styles/tokens";
+import {
+  CHAR_ACCENT,
+  CHAR_BG_ON,
+  CHAR_BORDER_OFF,
+  CHAR_BORDER_ON,
+  CHAR_EMOJI,
+  CHAR_ICONS,
+  CHAR_LABELS,
+  CHAR_ORDER,
+  DAY_LABELS,
+  FROG_BELL,
+  FROG_BODY,
+  FROG_DARK,
+  FROG_EYE,
+  FROG_GLOW,
+  GLYPH,
+  GRID_H,
+  GRID_W,
+  MONO,
+  NOTHING_THEME,
+  PD_GLOW1,
+  PD_GLOW2,
+  PD_GLOW3,
+  PD_PATCH,
+  PD_RED,
+  PD_WHITE,
+  Quotes,
+  RandomJokes,
+  RB_CREAM,
+  RB_DARK,
+  RB_EYE,
+  RB_GREY,
+  RB_PINK,
+  RB_WHITE,
+  Reminders,
+  STORAGE_KEY,
+  T,
+  THEME
+} from "./constants/consts";
+import {
+  carouselStyles,
+  habitStyles,
+  lockedStyles,
+  meditationStyles,
+  modalStyles,
+  pandaStyles,
+} from "./src/styles/stylesheets";
 
+import { tokens } from "./src/styles/tokens";
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
 
 if (
@@ -42,46 +86,6 @@ if (
 ) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
-
-// =============================================================================
-//  Constants
-// =============================================================================
-const Quotes = [
-  "Stay strong",
-  "Keep going",
-  "Dream big",
-  "Be kind",
-  "Work hard",
-  "Stay humble",
-  "Trust you",
-  "Think smart",
-  "Move fast",
-  "Stay sharp",
-];
-const Reminders = [
-  "Drink water",
-  "Call mom",
-  "Take break",
-  "Stretch now",
-  "Sleep well",
-  "Read 10m",
-  "Walk 5m",
-  "Smile :)",
-  "Plan day",
-  "Save money",
-];
-const RandomJokes = [
-  "I debug, therefore I am.",
-  "My code works… why?",
-  "It works on my machine.",
-  "AI said: try again.",
-  "I fixed it. Don't ask.",
-  "Bug found. Feature now.",
-  "Semicolon saved my life.",
-  "Coffee > production bugs.",
-  "Git blame saves careers.",
-  "I code. I cry. Repeat.",
-];
 
 // =============================================================================
 // 1. PERMISSION WRAPPER
@@ -104,82 +108,6 @@ function WithCalendarReadPermission({ children }) {
   if (status === "loading") return null;
   return <>{children}</>;
 }
-
-// =============================================================================
-// 2. CONFIGURATION & THEME
-// =============================================================================
-
-// ── WIDGET SIZE CONSTANTS ─────────────────────────────────────────────────────
-// Nothing Phone 4×2 widget target:
-//   matrix width  = GRID_W × (DOT_SIZE + DOT_GAP) = 32 × 3.6 ≈ 115 dp
-//   matrix height = GRID_H × (DOT_SIZE + DOT_GAP) = 25 × 3.6 ≈  90 dp
-const GRID_W = 35;
-const GRID_H = 30;
-const DOT_SIZE = 4.0; // ↓ was 5.5
-const DOT_GAP = 0.6; // ↓ was 1.8
-const SECTION_HEIGHT = 170; // ↓ was 320
-
-const THEME = {
-  bg: "#000000",
-  panel: "#111111",
-  dotInactive: "#1A1A1A",
-  dotActive: "#FFFFFF",
-  dotDim: "#444444",
-  accent: "#D71921",
-  text: "#FFFFFF",
-  textDim: "#666666",
-  bgDay: "#080808",
-  bgEvening: "#050A14",
-  bgLateNight: "#000000",
-  sunCore: "#FFD700",
-  sunRay: "#FFA500",
-  moonCore: "#F0F0FF",
-  moonShadow: "#707090",
-  rain: "#4A90E2",
-  snow: "#FFFFFF",
-  frogLit: "#39FF14",
-  frogDark: "#1A7A05",
-  frogEye: "#FFFFFF",
-  frogPupil: "#000000",
-  frogBelly: "#A8FF78",
-  frogGlow: "#00FF41",
-  rabWhite: "#F4F4F4",
-  rabGrey: "#BBBBBB",
-  rabDark: "#888888",
-  rabPink: "#FFB7C5",
-  rabEye: "#1A1A1A",
-  rabCream: "#E8E8E8",
-  pandaPatch: "#0D0D0D",
-  pandaGlow1: "#D4D4D4",
-  pandaGlow2: "#7A7A7A",
-  pandaGlow3: "#2E2E2E",
-};
-const NOTHING_THEME = {
-  bg: tokens.colors.dark,
-  surface: "#1B1B1D",
-  border: "#2A2A2A",
-  dot: "#2A2A2A",
-  dotLit: tokens.colors.light,
-  accent: tokens.colors.red,
-  text: tokens.colors.light,
-  textDim: tokens.colors["secondary-dark"],
-  textMid: tokens.colors["secondary-light"],
-};
-const T = {
-  bg: "#0A0A0A",
-  surface: "#111111",
-  border: "#1F1F1F",
-  dot: "#1A1A1A",
-  dotLit: "#FFFFFF",
-  dimmed: "#3A3A3A",
-  accent: "#D71921",
-  text: "#FFFFFF",
-  textDim: "#555555",
-  textMid: "#888888",
-};
-const MONO = Platform.OS === "ios" ? "Courier" : "monospace";
-const STORAGE_KEY = "ndot_habit_v1";
-const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
 
 // =============================================================================
 // 3. GRAPHICS ENGINE
@@ -237,12 +165,6 @@ const drawSnow = (buffer, frame) => {
 // =============================================================================
 // 4A. PANDA RENDERER v2 — GLOW / GRADIENT
 // =============================================================================
-const PD_WHITE = 1;
-const PD_PATCH = 21;
-const PD_GLOW1 = 22;
-const PD_GLOW2 = 23;
-const PD_GLOW3 = 24;
-const PD_RED = 3;
 
 const _fe = (buf, cx, cy, rx, ry, v) => {
   const x0 = Math.max(0, Math.floor(cx - rx - 1));
@@ -280,7 +202,7 @@ const renderPanda = (buf, state) => {
 
   const CX = GRID_W / 2 - 0.5 + xOffset;
   // ALIGNED TO BOTTOM: Center Y is now relative to the bottom of the grid
-  const CY = GRID_H - 15 - yOffset; 
+  const CY = GRID_H - 15 - yOffset;
   const HR = 9.5 + breathScale * 0.5;
 
   if (weather === "Rainy") {
@@ -528,14 +450,14 @@ const renderPanda = (buf, state) => {
   }
 
   if (mood === "work") {
-  const tieY = CY + HR + 2; 
-    
-    setPixel(buf, CX, tieY, PD_RED);         // Tie knot top
-    setPixel(buf, CX, tieY + 1, PD_RED);     // Tie knot bottom
+    const tieY = CY + HR + 2;
+
+    setPixel(buf, CX, tieY, PD_RED); // Tie knot top
+    setPixel(buf, CX, tieY + 1, PD_RED); // Tie knot bottom
     setPixel(buf, CX - 1, tieY + 1, PD_RED); // Collar left
     setPixel(buf, CX + 1, tieY + 1, PD_RED); // Collar right
-    setPixel(buf, CX, tieY + 2, PD_RED);     // Tie body
-    setPixel(buf, CX, tieY + 3, PD_RED);     // Tie tip
+    setPixel(buf, CX, tieY + 2, PD_RED); // Tie body
+    setPixel(buf, CX, tieY + 3, PD_RED); // Tie tip
   }
 
   if (mood === "birthday") {
@@ -628,11 +550,6 @@ const renderPanda = (buf, state) => {
 // =============================================================================
 // 4B. FROG RENDERER
 // =============================================================================
-const FROG_BODY = 10;
-const FROG_DARK = 11;
-const FROG_EYE = 12;
-const FROG_BELL = 13;
-const FROG_GLOW = 14;
 
 const renderFrog = (buffer, state) => {
   const {
@@ -940,12 +857,6 @@ const renderFrog = (buffer, state) => {
 // =============================================================================
 // 4C. RABBIT RENDERER
 // =============================================================================
-const RB_WHITE = 15;
-const RB_GREY = 16;
-const RB_PINK = 17;
-const RB_DARK = 18;
-const RB_EYE = 19;
-const RB_CREAM = 20;
 
 const fillEllipse = (buf, cx, cy, rx, ry, v) => {
   for (let y = Math.ceil(cy - ry - 1); y <= Math.floor(cy + ry + 1); y++)
@@ -1105,7 +1016,7 @@ const renderRabbit = (buf, state) => {
   setPixel(buf, CX, noseY, RB_PINK);
 
   const MY = muzzleCY + 0.5;
-  if (mood === "happy" || mood === "birthday" || mood=="work") {
+  if (mood === "happy" || mood === "birthday" || mood == "work") {
     setPixel(buf, CX - 4, MY, RB_EYE);
     setPixel(buf, CX - 3, MY + 1, RB_EYE);
     setPixel(buf, CX - 2, MY + 2, RB_EYE);
@@ -1324,86 +1235,6 @@ function getWeekId() {
     jan1 = new Date(d.getFullYear(), 0, 1);
   return `${d.getFullYear()}-W${Math.ceil(((d.getTime() - jan1.getTime()) / 86400000 + jan1.getDay() + 1) / 7)}`;
 }
-
-const GLYPH = {
-  0: [
-    [1, 1, 1],
-    [1, 0, 1],
-    [1, 0, 1],
-    [1, 0, 1],
-    [1, 1, 1],
-  ],
-  1: [
-    [0, 1, 0],
-    [1, 1, 0],
-    [0, 1, 0],
-    [0, 1, 0],
-    [1, 1, 1],
-  ],
-  2: [
-    [1, 1, 1],
-    [0, 0, 1],
-    [1, 1, 1],
-    [1, 0, 0],
-    [1, 1, 1],
-  ],
-  3: [
-    [1, 1, 1],
-    [0, 0, 1],
-    [0, 1, 1],
-    [0, 0, 1],
-    [1, 1, 1],
-  ],
-  4: [
-    [1, 0, 1],
-    [1, 0, 1],
-    [1, 1, 1],
-    [0, 0, 1],
-    [0, 0, 1],
-  ],
-  5: [
-    [1, 1, 1],
-    [1, 0, 0],
-    [1, 1, 1],
-    [0, 0, 1],
-    [1, 1, 1],
-  ],
-  6: [
-    [1, 1, 1],
-    [1, 0, 0],
-    [1, 1, 1],
-    [1, 0, 1],
-    [1, 1, 1],
-  ],
-  7: [
-    [1, 1, 1],
-    [0, 0, 1],
-    [0, 1, 0],
-    [0, 1, 0],
-    [0, 1, 0],
-  ],
-  8: [
-    [1, 1, 1],
-    [1, 0, 1],
-    [1, 1, 1],
-    [1, 0, 1],
-    [1, 1, 1],
-  ],
-  9: [
-    [1, 1, 1],
-    [1, 0, 1],
-    [1, 1, 1],
-    [0, 0, 1],
-    [1, 1, 1],
-  ],
-  "/": [
-    [0, 0, 1],
-    [0, 1, 0],
-    [0, 1, 0],
-    [1, 0, 0],
-    [0, 0, 0],
-  ],
-};
 
 function DotMatrix({
   value,
@@ -1984,48 +1815,6 @@ const getPandaSpeech = (mood, battery, event, weather) => {
 //    • Tap any card to select it directly
 //    • Rabbit locked → faded preview + red lock overlay; tapping shakes + flashes
 // =============================================================================
-const CHAR_ICONS = {
-  panda: {
-    dots: [
-      0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-      1, 1, 1, 1, 0,
-    ],
-    color: "#F0F0F0",
-    dim: "#2A2A2A",
-  },
-  frog: {
-    dots: [
-      1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0,
-      0, 1, 1, 0, 0,
-    ],
-    color: "#39FF14",
-    dim: "#0D2200",
-  },
-  rabbit: {
-    dots: [
-      0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0,
-      1, 1, 1, 0, 0,
-    ],
-    color: "#F4F4F4",
-    dim: "#2A2A2A",
-  },
-};
-
-const CHAR_ORDER = ["panda", "frog", "rabbit"];
-const CHAR_LABELS = { panda: "PANDA", frog: "FROG", rabbit: "BUNNY" };
-const CHAR_EMOJI = { panda: "🐼", frog: "🐸", rabbit: "🐇" };
-const CHAR_ACCENT = { panda: "#FFFFFF", frog: "#39FF14", rabbit: "#FFB7C5" };
-const CHAR_BORDER_ON = {
-  panda: "#FFFFFF88",
-  frog: "#39FF1488",
-  rabbit: "#FFB7C588",
-};
-const CHAR_BORDER_OFF = {
-  panda: "#333333",
-  frog: "#1A3A00",
-  rabbit: "#2A1A1A",
-};
-const CHAR_BG_ON = { panda: "#1A1A1A", frog: "#001A00", rabbit: "#1A0F14" };
 
 // Pixel-art padlock  (7×8 dot grid for a chunky, readable lock)
 function PixelLock({ size = 3, color = "#D71921" }) {
@@ -2321,31 +2110,6 @@ function CharacterCarousel({
   );
 }
 
-const carouselStyles = StyleSheet.create({
-  wrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingVertical: 2,
-  },
-  navBtn: {
-    width: 20,
-    height: 60,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#111",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#2A2A2A",
-  },
-  navText: {
-    color: "#666",
-    fontSize: 18,
-    fontFamily: MONO,
-    lineHeight: 20,
-  },
-});
-
 // ── Small streak progress bar shown below carousel when rabbit locked ─────────
 function RabbitLockProgress({ streak, unlocked }) {
   if (unlocked) {
@@ -2522,189 +2286,6 @@ function LockedCharacterModal({ visible, streak, onClose }) {
   );
 }
 
-const modalStyles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.72)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 18,
-  },
-  panel: {
-    width: "100%",
-    maxWidth: 380,
-    backgroundColor: "#0D0D0D",
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: "#2A1A1A",
-    overflow: "hidden",
-    paddingBottom: 18,
-  },
-
-  // Header
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#1A1A1A",
-  },
-  headerLeft: { flexDirection: "row", alignItems: "center", gap: 8 },
-  headerChip: {
-    fontFamily: MONO,
-    fontSize: 9,
-    color: "#D71921",
-    letterSpacing: 1.5,
-    fontWeight: "700",
-  },
-  closeBtn: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#1A1A1A",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  closeTxt: { color: "#666", fontSize: 11, fontFamily: MONO },
-
-  // Live preview banner (replaces static ghost)
-  livePreviewBanner: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    marginHorizontal: 16,
-    marginTop: 10,
-    marginBottom: 2,
-    backgroundColor: "#0A1400",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderWidth: 1,
-    borderColor: "#39FF1433",
-  },
-  liveDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#39FF14",
-    shadowColor: "#39FF14",
-    shadowRadius: 4,
-    shadowOpacity: 0.9,
-  },
-  livePreviewText: {
-    fontFamily: MONO,
-    fontSize: 7,
-    color: "#39FF14",
-    letterSpacing: 0.8,
-    fontWeight: "700",
-    flex: 1,
-  },
-
-  // Info block
-  infoBlock: {
-    paddingHorizontal: 18,
-    paddingTop: 14,
-    gap: 4,
-    alignItems: "center",
-  },
-  charName: {
-    fontFamily: MONO,
-    fontSize: 13,
-    color: "#FFB7C5",
-    letterSpacing: 2,
-    fontWeight: "700",
-  },
-  lockTitle: {
-    fontFamily: MONO,
-    fontSize: 8,
-    color: "#D71921",
-    letterSpacing: 2,
-    fontWeight: "700",
-    marginTop: 2,
-  },
-  lockBody: {
-    fontFamily: MONO,
-    fontSize: 9,
-    color: "#666",
-    letterSpacing: 0.5,
-    lineHeight: 15,
-    textAlign: "center",
-    marginTop: 4,
-  },
-  highlight: {
-    color: "#FFB7C5",
-    fontWeight: "700",
-  },
-
-  // Progress
-  progressSection: {
-    paddingHorizontal: 18,
-    paddingTop: 14,
-    gap: 8,
-    alignItems: "center",
-  },
-  progressTitle: {
-    fontFamily: MONO,
-    fontSize: 7,
-    color: "#444",
-    letterSpacing: 1.5,
-    fontWeight: "700",
-  },
-  pipRow: { flexDirection: "row", gap: 7 },
-  pip: {
-    width: 26,
-    height: 10,
-    borderRadius: 5,
-  },
-  progressCount: {
-    fontFamily: MONO,
-    fontSize: 8,
-    color: "#555",
-    letterSpacing: 0.5,
-    textAlign: "center",
-  },
-
-  // How-to hint box
-  hintBox: {
-    marginHorizontal: 18,
-    marginTop: 14,
-    backgroundColor: "#111",
-    borderRadius: 10,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#1E1E1E",
-  },
-  hintText: {
-    fontFamily: MONO,
-    fontSize: 8.5,
-    color: "#555",
-    letterSpacing: 0.4,
-    lineHeight: 15,
-  },
-
-  // Dismiss button
-  dismissBtn: {
-    marginHorizontal: 18,
-    marginTop: 14,
-    backgroundColor: "#1A0000",
-    borderRadius: 10,
-    paddingVertical: 11,
-    alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "#D7192155",
-  },
-  dismissTxt: {
-    fontFamily: MONO,
-    fontSize: 11,
-    color: "#D71921",
-    letterSpacing: 2,
-    fontWeight: "700",
-  },
-});
-
 // =============================================================================
 // 9. MAIN WIDGET
 // =============================================================================
@@ -2722,7 +2303,7 @@ function PandaWidget() {
   const animValue = useRef(new Animated.Value(0)).current;
   const [animFrameVal, setAnimFrameVal] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
-const [habitDays, setHabitDays] = useState(() => {
+  const [habitDays, setHabitDays] = useState(() => {
     const todayIdx = getTodayIndex();
     // Creates an array where every day is true EXCEPT today
     return Array.from({ length: 7 }, (_, i) => i !== todayIdx);
@@ -2735,7 +2316,7 @@ const [habitDays, setHabitDays] = useState(() => {
 
   // Rabbit is unlocked when all 7 days in the current week are checked
   const rabbitUnlocked = habitDays.filter(Boolean).length === 7;
-// const rabbitUnlocked=true
+  // const rabbitUnlocked=true
   const getCalculatedMood = () => {
     if (timePeriod === "late-night") return "disappointed";
     if (batteryLevel < 20) return "starving";
@@ -2764,7 +2345,7 @@ const [habitDays, setHabitDays] = useState(() => {
           `https://api.open-meteo.com/v1/forecast?latitude=${loc.coords.latitude}&longitude=${loc.coords.longitude}&current_weather=true`,
         );
         const data = await res.json();
-        const code =  data.current_weather.weathercode;
+        const code = data.current_weather.weathercode;
         let cond = "Clear";
         if (code > 3) cond = "Cloudy";
         if (code >= 51 && code <= 67) cond = "Rainy";
@@ -3208,399 +2789,10 @@ const [habitDays, setHabitDays] = useState(() => {
 // =============================================================================
 // 10. STYLES — compact widget sizing
 // =============================================================================
-const pandaStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  // ── Outer shell: tight border, small padding ──────────────────────────────
-  deviceShell: {
-    width: "96%",
-    maxWidth: 400,
-    height: "96%",
-    backgroundColor: "#000",
-    borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: "#2A2A2A",
-    padding: 4,
-  },
-
-  // ── Main top row: matrix + right info col ─────────────────────────────────
-  widgetRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 8,
-    paddingHorizontal: 6,
-    paddingTop: 8,
-  },
-
-  // ── The dot-matrix screen: no fixed height → sized by content ─────────────
-  screenContainer: {
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#1A1A1A",
-    padding: 3, // tight inner padding
-    alignSelf: "flex-start", // shrink-wrap to matrix size
-  },
-
-  row: { flexDirection: "row" },
-  dot: {
-    width: DOT_SIZE,
-    height: DOT_SIZE,
-    borderRadius: DOT_SIZE / 2,
-    margin: DOT_GAP / 2,
-  },
-
-  // ── Lock preview overlay on dot matrix ────────────────────────────────────
-  matrixLockOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: "#D7192155",
-    justifyContent: "space-between",
-    padding: 4,
-  },
-  matrixLockChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    alignSelf: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.80)",
-    paddingHorizontal: 5,
-    paddingVertical: 3,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#D7192166",
-  },
-  matrixLockText: {
-    fontFamily: MONO,
-    fontSize: 5.5,
-    color: "#D71921",
-    letterSpacing: 0.8,
-    fontWeight: "700",
-  },
-  matrixLockBanner: {
-    alignSelf: "stretch",
-    backgroundColor: "rgba(0,0,0,0.82)",
-    paddingVertical: 3,
-    paddingHorizontal: 4,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: "#D7192144",
-    alignItems: "center",
-  },
-  matrixLockBannerText: {
-    fontFamily: MONO,
-    fontSize: 6,
-    color: "#D71921",
-    letterSpacing: 1,
-    fontWeight: "700",
-  },
-
-  // ── Right column: character info ──────────────────────────────────────────
-  rightCol: {
-    flex: 1,
-    gap: 5,
-    paddingTop: 2,
-    minWidth: 0, // allow flex shrink
-  },
-
-  speechBubble: {
-    backgroundColor: THEME.panel,
-    borderRadius: 10,
-    padding: 8,
-    borderWidth: 1,
-    minHeight: 80,
-  },
-  speechLabel: {
-    color: THEME.textDim,
-    fontSize: 7,
-    fontWeight: "bold",
-    marginBottom: 5,
-    letterSpacing: 0.8,
-  },
-  speechValue: {
-    color: THEME.text,
-    fontSize: 9,
-    fontFamily: Platform.OS === "ios" ? "Courier" : "monospace",
-    lineHeight: 13,
-    letterSpacing: 0.3,
-  },
-
-  batteryDisplay: {
-    fontSize: 9,
-    fontWeight: "bold",
-    letterSpacing: 0.8,
-    textAlign: "center",
-  },
-
-  // ── Micro control row (emoji buttons) ─────────────────────────────────────
-  microControls: {
-    flexDirection: "row",
-    gap: 4,
-    justifyContent: "center",
-  },
-  microBtn: {
-    backgroundColor: "#1A1A1A",
-    borderRadius: 6,
-    padding: 5,
-    borderWidth: 1,
-    borderColor: "#2A2A2A",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  microBtnText: { fontSize: 14 },
-
-  // ── Status bar ─────────────────────────────────────────────────────────────
-  statusBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 8,
-    paddingTop: 6,
-  },
-  statusText: {
-    color: "#444",
-    fontSize: 8,
-    fontFamily: Platform.OS === "ios" ? "Courier" : "monospace",
-    letterSpacing: 0.5,
-  },
-  scrollHint: {
-    color: "#333",
-    fontSize: 8,
-    fontWeight: "bold",
-    letterSpacing: 0.8,
-  },
-});
-
-const habitStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-    backgroundColor: T.bg,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: T.border,
-    paddingHorizontal: 14,
-    paddingTop: 14,
-    paddingBottom: 10,
-    alignItems: "center",
-    justifyContent: "space-between",
-    overflow: "hidden",
-  },
-  header: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  sysLabel: {
-    fontFamily: MONO,
-    fontSize: 7,
-    color: T.textDim,
-    letterSpacing: 2,
-    marginBottom: 2,
-  },
-  title: {
-    fontFamily: MONO,
-    fontSize: 10,
-    color: T.text,
-    letterSpacing: 1.2,
-    fontWeight: "700",
-    lineHeight: 14,
-  },
-  streakBlock: { alignItems: "flex-end", gap: 3 },
-  streakLabel: {
-    fontFamily: MONO,
-    fontSize: 6,
-    color: T.textDim,
-    letterSpacing: 1,
-  },
-  centerButton: {
-    position: "absolute",
-    borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "transparent",
-  },
-  dayStrip: { flexDirection: "row", gap: 5, alignItems: "flex-end" },
-  dayCol: { alignItems: "center", gap: 3 },
-  dayBar: { width: 5, borderRadius: 2.5 },
-  dayLabel: { fontFamily: MONO, fontSize: 6, letterSpacing: 0.4 },
-  footer: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  statusRow: { flexDirection: "row", alignItems: "center", gap: 4 },
-  statusDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.9,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  statusText: {
-    fontFamily: MONO,
-    fontSize: 7,
-    color: T.textMid,
-    letterSpacing: 1.2,
-  },
-  dowLabel: {
-    fontFamily: MONO,
-    fontSize: 6,
-    color: T.textDim,
-    letterSpacing: 1,
-  },
-  cornerGlyph: {
-    position: "absolute",
-    bottom: 8,
-    right: 10,
-    width: 11,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 2,
-    opacity: 0.15,
-  },
-  cornerDot: {
-    width: 2.5,
-    height: 2.5,
-    borderRadius: 1.25,
-    backgroundColor: T.dotLit,
-  },
-  rewardRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    paddingTop: 6,
-    borderTopWidth: 1,
-    borderTopColor: "#1A1A1A",
-    marginTop: 4,
-  },
-  rewardLabel: {
-    fontFamily: MONO,
-    fontSize: 7,
-    letterSpacing: 0.8,
-    color: "#666",
-  },
-});
-
-const meditationStyles = StyleSheet.create({
-  section: {
-    alignItems: "center",
-    width: "100%",
-    padding: tokens.spacing[3.5],
-    backgroundColor: NOTHING_THEME.surface,
-    borderRadius: tokens.borderRadius.xl,
-    borderWidth: tokens.borderWidth[1],
-    borderColor: NOTHING_THEME.border,
-  },
-  presetsRow: {
-    flexDirection: "row",
-    gap: tokens.spacing[1.5],
-    marginBottom: tokens.spacing[3.5],
-  },
-  presetBtn: {
-    backgroundColor: NOTHING_THEME.bg,
-    width: 28,
-    height: 28,
-    borderRadius: tokens.borderRadius.md,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: tokens.borderWidth[1],
-    borderColor: NOTHING_THEME.border,
-  },
-  controlsRow: {
-    flexDirection: "row",
-    gap: tokens.spacing[1.5],
-  },
-  controlBtn: {
-    backgroundColor: NOTHING_THEME.bg,
-    width: 70,
-    height: 34,
-    borderRadius: tokens.borderRadius.lg,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: tokens.borderWidth[1],
-    borderColor: NOTHING_THEME.border,
-  },
-});
 
 // =============================================================================
 // 10B. LOCK / CAROUSEL STYLES
 // =============================================================================
-const lockedStyles = StyleSheet.create({
-  // Streak progress pip-row shown under carousel
-  progressRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 2,
-  },
-  pip: {
-    width: 7,
-    height: 5,
-    borderRadius: 2.5,
-  },
-  pipLabel: {
-    fontFamily: MONO,
-    fontSize: 6.5,
-    color: "#3A3A3A",
-    letterSpacing: 0.5,
-    marginLeft: 2,
-  },
-
-  // Flash message when locked character is tapped
-  flashMsg: {
-    backgroundColor: "#1A0000",
-    borderRadius: 7,
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderWidth: 1,
-    borderColor: "#D7192166",
-    alignItems: "center",
-  },
-  flashText: {
-    fontFamily: MONO,
-    fontSize: 7.5,
-    color: "#D71921",
-    letterSpacing: 0.8,
-    fontWeight: "700",
-    textAlign: "center",
-  },
-
-  // Habit tracker reward row (bottom of habit page)
-  unlockedBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: "#0A1A0A",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderWidth: 1,
-    borderColor: "#FFB7C566",
-  },
-  unlockedText: {
-    fontFamily: MONO,
-    fontSize: 7,
-    color: "#FFB7C5",
-    letterSpacing: 0.8,
-    fontWeight: "700",
-  },
-});
 
 // =============================================================================
 // 11. ENTRY POINT
