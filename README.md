@@ -5,7 +5,7 @@
 Zen Zoo is a context-aware widget that transforms your device into a living, breathing digital habitat. It’s not just a virtual pet; it’s a reflection of your digital life, designed to make you smile, focus, and feel better through emotional gamification and a stunning Nothing OS dot-matrix aesthetic.
 
    
-
+-----
 ## 🌄 Demo
 <img width="320" height="652" alt="image" src="https://github.com/user-attachments/assets/0c986b1c-0b5b-4260-81ba-17f298dbfc51" />
 <img width="324" height="660" alt="image" src="https://github.com/user-attachments/assets/4c412e78-dd43-4d95-9091-58aaaf022f06" />
@@ -15,6 +15,11 @@ Zen Zoo is a context-aware widget that transforms your device into a living, bre
 <img width="318" height="652" alt="image" src="https://github.com/user-attachments/assets/7cfaf930-450c-4d6e-8f74-708a95296974" />
 
 [](https://www.google.com/search?q=https://www.linkedin.com/in/radinath/) [](https://www.google.com/search?q=%23)
+
+
+-----
+## 📽️Demo Video (click to see youtube video)
+[![Introducing Zen Zoo | Your digital pet widget](https://img.youtube.com/vi/NgVzWHL8k5k/maxresdefault.jpg)](https://youtu.be/NgVzWHL8k5k)
 
 -----
 
