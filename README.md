@@ -1,50 +1,110 @@
-# Welcome to your Expo app 👋
+# 🐼 Zen Zoo (THE SYSTEM SOUL)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Give your phone a heartbeat. Meet your new digital companion.**
 
-## Get started
+Zen Zoo is a context-aware widget that transforms your device into a living, breathing digital habitat. It’s not just a virtual pet; it’s a reflection of your digital life, designed to make you smile, focus, and feel better through emotional gamification and a stunning Nothing OS dot-matrix aesthetic.
 
-1. Install dependencies
+   
 
-   ```bash
-   npm install
-   ```
+## 🌄 Demo
+<img width="320" height="652" alt="image" src="https://github.com/user-attachments/assets/0c986b1c-0b5b-4260-81ba-17f298dbfc51" />
+<img width="324" height="660" alt="image" src="https://github.com/user-attachments/assets/4c412e78-dd43-4d95-9091-58aaaf022f06" />
+<img width="320" height="665" alt="image" src="https://github.com/user-attachments/assets/6d1e4e6f-3e81-4ee0-aaff-0f3730c47316" />
+<img width="318" height="664" alt="image" src="https://github.com/user-attachments/assets/4ba7b6f3-743e-43e1-9217-8d04ab48a92d" />
+<img width="317" height="660" alt="image" src="https://github.com/user-attachments/assets/ebdb62fb-092b-4dfe-9c6d-bbe0d736e351" />
+<img width="318" height="652" alt="image" src="https://github.com/user-attachments/assets/7cfaf930-450c-4d6e-8f74-708a95296974" />
 
-2. Start the app
+[](https://www.google.com/search?q=https://www.linkedin.com/in/radinath/) [](https://www.google.com/search?q=%23)
 
-   ```bash
-   npx expo start
-   ```
+-----
 
-In the output, you'll find options to open the app in a
+## 🚀 Key Features
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+  * **🔋 System-Synced Health:** Your pet's energy is directly linked to your device's metabolism. When the battery drops, your pet gets tired. Plug it in to trigger a real-time healing animation\!
+  * **📅 Context-Aware Companionship:** Syncs with your schedule and environment. Raining outside? Your pet grabs an umbrella. Calendar meeting coming up? They automatically suit up in a tie.
+  * **🧘 Digital Wellbeing & Zen Mode:** Doom-scrolling at 2 AM? Your pet gets disappointed to gently nudge you offline. Need a break? Activate the built-in Meditation Timer and find focus alongside your glowing, golden companion.
+  * **🔄 Gamified Habit Tracker:** Reclaim your time by tracking your social media detox on our custom Nothing-style habit ring. Hit your daily goal to award your pet a victory crown.
+  * **🎨 The Character Zoo:** Start with the Playful Panda and To-Do Frog. Complete a perfect 7-day habit streak to break the virtual lock and earn the elusive Habit Rabbit\!
+  * **⚙️ Custom 2D Graphics Engine:** Procedurally generated dot-matrix pixel art powered by React Native SVG and math-based layout animations, ensuring a butter-smooth, unique visual experience.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+-----
 
-## Get a fresh project
+## 🛠️ Tech Stack
 
-When you're ready, run:
+### Frontend & Graphics
+
+  * **React Native** + **Expo**: High-performance mobile UI rendering.
+  * **React Native SVG**: For the interactive node-based drawing engine and custom circular habit rings.
+  * **Animated API**: For buttery smooth breathing, bouncing, and layout transitions.
+
+### Context & Infrastructure
+
+  * **React Native Device Info**: For real-time battery and hardware metabolism polling.
+  * **Expo Location & Open-Meteo API**: For fetching dynamic, real-world weather states.
+  * **React Native Calendar Events**: For parsing schedules to trigger context-aware outfits.
+  * **AsyncStorage**: Local, offline-first storage for habit streaks and meditation persistence.
+  * **Expo AV**: For lo-fi audio playback during Zen Mode.
+
+-----
+
+## 💻 Local Installation Guide
+
+Follow these steps to run Zen Zoo locally on your simulator or physical device.
+
+### Prerequisites
+
+  * **OS:** macOS, Linux, or Windows.
+  * **Node.js:** Version 18+.
+  * **Mobile Environment:** iOS Simulator (Xcode), Android Emulator (Android Studio), or the Expo Go app on your physical device.
+
+### 1\. Clone the Repository
 
 ```bash
-npm run reset-project
+git clone https://github.com/yourusername/zen-zoo.git
+cd zen-zoo
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 📂 Project Structure
 
-## Learn more
+Here is an overview of the repository's architecture:
 
-To learn more about developing your project with Expo, look at the following resources:
+```text
+zen-zoo/
+├── src/                     # 🎨 Source Code
+│   ├── components/          # Reusable UI (DotMatrix, Ring, Carousel)
+│   ├── engine/              # ⚙️ Custom 2D Raster Graphics Engine (renderPanda, renderFrog)
+│   ├── styles/              # Design tokens and Nothing OS theme configurations
+│   └── App.js               # Main Widget Orchestrator
+│
+├── assets/                  # 🖼️ Static assets and audio files
+│
+├── package.json             # App dependencies (Expo, React Native SVG, etc.)
+└── README.md                # Project Documentation
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## ⚙️ Setup Guidelines
 
-## Join the community
+To run Zen Zoo locally and test the custom graphics engine, follow these configurations.
 
-Join our community of developers creating universal apps.
+### 1\. Environment Setup
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Zen Zoo requires a standard React Native / Expo environment.
+
+```bash
+# Navigate to the project directory
+cd zen-zoo
+
+# Install Dependencies (Expo, SVG, Permissions)
+npm install
+```
+
+### 2\. Running the App
+
+```bash
+# Start the Expo Metro Bundler
+npx expo start
+```
+
+  * Press **`a`** to open in the Android Emulator.
+  * Press **`i`** to open in the iOS Simulator.
+  * Scan the QR code with the **Expo Go** app to view directly on your physical Nothing Phone (or any other device).
