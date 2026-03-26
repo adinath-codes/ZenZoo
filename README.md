@@ -1,4 +1,4 @@
-# 🐼 Zen Zoo (THE SYSTEM SOUL) -> CONCEPT
+# 🐼 Zen Zoo (THE SYSTEM SOUL) -> CONCEPT (NOTHING ESSENTIAL APP)
 THIS WORKS AS A PERFECTLY AS AN ESSENTIAL APP/WIDGET ON NOTHING DEVICES
 
 **Give your phone a heartbeat. Meet your new digital companion.**
