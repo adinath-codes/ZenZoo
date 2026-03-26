@@ -1,5 +1,6 @@
-# 🐼 Zen Zoo (THE SYSTEM SOUL) -> CONCEPT (NOTHING ESSENTIAL APP)
-THIS WORKS AS A PERFECTLY AS AN ESSENTIAL APP/WIDGET ON NOTHING DEVICES
+# 🐼 Zen Zoo (THE SYSTEM SOUL) -> CONCEPT (NOTHING ESSENTIAL APP FOR NOTHING OS)
+THIS WORKS AS A PERFECTLY AS AN ESSENTIAL APP/WIDGET ON NOTHING DEVICES (not an andriod widget , but NOTHING OS)
+This is a demo for the nothing essential app , since nothing essential app also run on the react native 
 
 **Give your phone a heartbeat. Meet your new digital companion.**
 
