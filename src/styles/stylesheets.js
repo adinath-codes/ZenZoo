@@ -1,11 +1,14 @@
+import { Platform, StyleSheet } from "react-native";
 import {
-    DOT_GAP,
-    DOT_SIZE,
-    MONO,
-    NOTHING_THEME,
-    T,
-    THEME,
+  DOT_GAP,
+  DOT_SIZE,
+  MONO,
+  NOTHING_THEME,
+  T,
+  THEME,
 } from "../../constants/consts";
+import { tokens } from "./tokens";
+
 const carouselStyles = StyleSheet.create({
   wrapper: {
     flexDirection: "row",
@@ -217,9 +220,10 @@ const modalStyles = StyleSheet.create({
 const pandaStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    maxHeight: 200,
   },
 
   // ── Outer shell: tight border, small padding ──────────────────────────────
@@ -606,7 +610,11 @@ const lockedStyles = StyleSheet.create({
 });
 
 export {
-    carouselStyles, habitStyles, lockedStyles, meditationStyles, modalStyles,
-    pandaStyles
+  carouselStyles,
+  habitStyles,
+  lockedStyles,
+  meditationStyles,
+  modalStyles,
+  pandaStyles
 };
 

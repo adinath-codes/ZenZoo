@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Battery from "expo-battery";
 import * as Location from "expo-location";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -15,8 +16,6 @@ import {
   UIManager,
   View,
 } from "react-native";
-import DeviceInfo from "react-native-device-info";
-import { check, PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import Svg, {
   Circle,
   Defs,
@@ -66,7 +65,7 @@ import {
   Reminders,
   STORAGE_KEY,
   T,
-  THEME
+  THEME,
 } from "./constants/consts";
 import {
   carouselStyles,
@@ -76,10 +75,8 @@ import {
   modalStyles,
   pandaStyles,
 } from "./src/styles/stylesheets";
-
 import { tokens } from "./src/styles/tokens";
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
-
 if (
   Platform.OS === "android" &&
   UIManager.setLayoutAnimationEnabledExperimental
@@ -90,21 +87,22 @@ if (
 // =============================================================================
 // 1. PERMISSION WRAPPER
 // =============================================================================
-function WithCalendarReadPermission({ children }) {
+export function WithCalendarReadPermission({ children }) {
   const [status, setStatus] = useState("loading");
+
   useEffect(() => {
     const checkPerms = async () => {
       try {
-        let result = await check(PERMISSIONS.ANDROID.READ_CALENDAR);
-        if (result === RESULTS.DENIED || result === RESULTS.BLOCKED)
-          result = await request(PERMISSIONS.ANDROID.READ_CALENDAR);
-        setStatus(result === RESULTS.GRANTED ? "authorized" : "denied");
+        const { status: calendarStatus } =
+          await Calendar.requestCalendarPermissionsAsync();
+        setStatus(calendarStatus === "granted" ? "authorized" : "denied");
       } catch {
         setStatus("denied");
       }
     };
     checkPerms();
   }, []);
+
   if (status === "loading") return null;
   return <>{children}</>;
 }
@@ -140,6 +138,7 @@ const drawRect = (buffer, x, y, w, h, colorVal) => {
       if (iy >= 0 && iy < GRID_H) buffer[iy][wx] = colorVal;
     }
 };
+
 const setPixel = (buffer, x, y, colorVal) => {
   const ix = Math.round(x),
     iy = Math.round(y);
@@ -161,11 +160,9 @@ const drawSnow = (buffer, frame) => {
     setPixel(buffer, x, y, 9);
   }
 };
-
 // =============================================================================
 // 4A. PANDA RENDERER v2 — GLOW / GRADIENT
 // =============================================================================
-
 const _fe = (buf, cx, cy, rx, ry, v) => {
   const x0 = Math.max(0, Math.floor(cx - rx - 1));
   const x1 = Math.min(GRID_W - 1, Math.ceil(cx + rx + 1));
@@ -181,6 +178,11 @@ const _ring = (buf, cx, cy, r, v, step = 1.4) => {
     const rad = (d * Math.PI) / 180;
     setPixel(buf, cx + r * Math.cos(rad), cy + r * Math.sin(rad), v);
   }
+};
+const dummy = () => {
+  console.log(
+    "Dummy function to preserve line numbers for git diff after recent edits",
+  );
 };
 
 const renderPanda = (buf, state) => {
@@ -2289,7 +2291,7 @@ function LockedCharacterModal({ visible, streak, onClose }) {
 // =============================================================================
 // 9. MAIN WIDGET
 // =============================================================================
-function PandaWidget() {
+export function PandaWidget() {
   const [batteryLevel, setBatteryLevel] = useState(100);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [partyActive, setPartyActive] = useState(false);
@@ -2336,8 +2338,9 @@ function PandaWidget() {
 
   useEffect(() => {
     const init = async () => {
-      const level = await DeviceInfo.getBatteryLevel();
-      setBatteryLevel(100);
+      const level = await Battery.getBatteryLevelAsync();
+      // console.log(Math.round(batteryLevel * 100) + '%');
+      setBatteryLevel(Math.round(level * 100));
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
         const loc = await Location.getCurrentPositionAsync({});
@@ -2738,8 +2741,7 @@ function PandaWidget() {
                     </View>
                   </View>
                 </View>
-
-                {/* STATUS BAR */}
+                {/* STATUS */}
                 <View style={pandaStyles.statusBar}>
                   <Text style={pandaStyles.statusText}>
                     STATUS:{" "}
@@ -2775,7 +2777,6 @@ function PandaWidget() {
           </ScrollView>
         </View>
       </View>
-
       {/* ── LOCKED RABBIT MODAL ─────────────────────────────────────── */}
       <LockedCharacterModal
         visible={showLockedModal}
@@ -2783,24 +2784,5 @@ function PandaWidget() {
         onClose={handleModalClose}
       />
     </View>
-  );
-}
-
-// =============================================================================
-// 10. STYLES — compact widget sizing
-// =============================================================================
-
-// =============================================================================
-// 10B. LOCK / CAROUSEL STYLES
-// =============================================================================
-
-// =============================================================================
-// 11. ENTRY POINT
-// =============================================================================
-export default function App() {
-  return (
-    <WithCalendarReadPermission>
-      <PandaWidget />
-    </WithCalendarReadPermission>
   );
 }

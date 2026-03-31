@@ -1,9 +1,5 @@
-// =============================================================================
-// 2. CONFIGURATION & THEME
-// =============================================================================
-// =============================================================================
-//  Constants
-// =============================================================================
+import { Platform } from "react-native";
+import { tokens } from "../src/styles/tokens";
 const Quotes = [
   "Stay strong",
   "Keep going",
@@ -249,45 +245,47 @@ const CHAR_BORDER_OFF = {
   rabbit: "#2A1A1A",
 };
 const CHAR_BG_ON = { panda: "#1A1A1A", frog: "#001A00", rabbit: "#1A0F14" };
-
+const DUMMY = null;
+const DUM = null;
 export {
-  Quotes,
-  Reminders,
-  RandomJokes,
-  GRID_W,
-  GRID_H,
-  DOT_SIZE,
-  DOT_GAP,
-  THEME,
-  NOTHING_THEME,
-  T,
-  MONO,
-  STORAGE_KEY,
+  CHAR_ACCENT,
+  CHAR_BG_ON,
+  CHAR_BORDER_OFF,
+  CHAR_BORDER_ON,
+  CHAR_EMOJI,
+  CHAR_ICONS,
+  CHAR_LABELS,
+  CHAR_ORDER,
   DAY_LABELS,
-  PD_WHITE,
-  PD_PATCH,
-  PD_GLOW1,
-  PD_GLOW2,
-  PD_GLOW3,
-  PD_RED,
+  DOT_GAP,
+  DOT_SIZE,
+  FROG_BELL,
   FROG_BODY,
   FROG_DARK,
   FROG_EYE,
-  FROG_BELL,
   FROG_GLOW,
-  RB_WHITE,
-  RB_GREY,
-  RB_PINK,
+  GLYPH,
+  GRID_H,
+  GRID_W,
+  MONO,
+  NOTHING_THEME,
+  PD_GLOW1,
+  PD_GLOW2,
+  PD_GLOW3,
+  PD_PATCH,
+  PD_RED,
+  PD_WHITE,
+  Quotes,
+  RandomJokes,
+  RB_CREAM,
   RB_DARK,
   RB_EYE,
-  RB_CREAM,
-  GLYPH,
-  CHAR_ICONS,
-  CHAR_ORDER,
-  CHAR_LABELS,
-  CHAR_EMOJI,
-  CHAR_ACCENT,
-  CHAR_BORDER_ON,
-  CHAR_BORDER_OFF,
-  CHAR_BG_ON,
+  RB_GREY,
+  RB_PINK,
+  RB_WHITE,
+  Reminders,
+  STORAGE_KEY,
+  T,
+  THEME
 };
+

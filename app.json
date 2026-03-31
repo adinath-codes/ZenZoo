@@ -1,4 +1,14 @@
 {
-  "name": "AIWidget",
-  "displayName": "AIWidget"
+  "name": "ZenZoo",
+  "displayName": "ZenZoo",
+  "android": {
+    "package": "com.anonymous.zenzoo"
+  },
+  "extra": {
+    "eas": {
+      "projectId": "712e518d-1ee6-43e4-8f90-f751b22a056f"
+    }
+  },
+  "plugins": ["expo-build-properties"],
+  "owner": "adinath-codes"
 }
